@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*.ipynb_checkpoints
+.env
+*.env
+*.log
+*.sqlite3
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Models
+*.h5
+*.pt
+*.pkl
+
+models/**/*.safetensors
+models/**/*.pt
+
+
+# Datasets
+/data/
+*.csv
+*.tsv
+*.zip
+
+# VS Code / IDEs
+.vscode/
+.idea/
+
+# Node/React
+node_modules/
+build/
+dist/
+.env.local
+
+
+
+# Python
+__pycache__/
+*.py[cod]
+*.log
+.env
+*.env
+
+# VSCode or IDE files
+.vscode/
+.idea/
+
+# Mac/Windows system files
+.DS_Store
+Thumbs.db
+"models/BERT_FakeReal/model.safetensors" 

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FactGuard</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            text-align: center;
+            color: white;
+            margin-top: 100px;
+        }
+
+        h1 {
+            font-size: 40px;
+        }
+
+        input {
+            width: 450px;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 30px;
+            font-size: 18px;
+            background: #00c6ff;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0072ff;
+        }
+
+        #result {
+            margin-top: 30px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .real {
+            color: #00ff88;
+        }
+
+        .fake {
+            color: #ff4d4d;
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>📰 FactGuard</h1>
+
+<input type="text" id="news" placeholder="Enter news here">
+<br>
+<button id="btn" onclick="check()">Check</button>
+
+<p id="result"></p>
+
+<script>
+async function check() {
+    const text = document.getElementById("news").value.trim();
+    const result = document.getElementById("result");
+    const btn = document.getElementById("btn");
+
+    if (!text) {
+        alert("Please enter some news text");
+        return;
+    }
+
+    // 🔥 Disable button + show loading
+    btn.disabled = true;
+    result.innerHTML = "Checking... ⏳";
+
+    try {
+        const res = await fetch("http://127.0.0.1:8000/predict", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ text })
+        });
+
+        const data = await res.json();
+        console.log(data);
+
+        let confidenceText = (data.confidence !== undefined)
+            ? ` (${data.confidence}% confidence)`
+            : "";
+
+        let sourceHTML = "";
+
+        // ✅ Show real sources
+        if (data.source && Array.isArray(data.source)) {
+            sourceHTML = "<br><br><b>Sources:</b><br>";
+
+            data.source.forEach(article => {
+                sourceHTML += `<a href="${article.url}" target="_blank" style="color:#00ffff;">
+                    ${article.title}
+                </a><br>`;
+            });
+        } 
+        // ❌ No sources
+        else {
+            sourceHTML = `<br><span style="color:#ffcccc;">Source not found</span>`;
+        }
+
+        result.innerHTML = `
+            Result: ${data.prediction}${confidenceText}
+            ${sourceHTML}
+        `;
+
+        result.className = data.prediction.includes("REAL") ? "real" : "fake";
+
+    } catch (err) {
+        result.innerHTML = "Error connecting to server";
+    }
+
+    // 🔥 Enable button again
+    btn.disabled = false;
+}
+</script>
+
+</body>
+</html>
